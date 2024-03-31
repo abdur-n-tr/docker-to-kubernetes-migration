@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.llama-webui.entrypoints: websecure
+    traefik.http.routers.llama-webui.middlewares: ratelimit@file, security-headers@file, geoblock@file
+    traefik.http.routers.llama-webui.rule: Host(`gpt.`)
+    traefik.http.routers.llama-webui.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.network/net: "true"
+    io.kompose.service: llama-webui
+  name: llama-webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: llama-webui
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        traefik.enable: "true"
+        traefik.http.routers.llama-webui.entrypoints: websecure
+        traefik.http.routers.llama-webui.middlewares: ratelimit@file, security-headers@file, geoblock@file
+        traefik.http.routers.llama-webui.rule: Host(`gpt.`)
+        traefik.http.routers.llama-webui.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: llama-webui
+    spec:
+      containers:
+        - env:
+            - name: OLLAMA_API
+              value: http://ollama:11434/api
+          image: ghcr.io/open-webui/open-webui:main
+          name: llama-webui
+          ports:
+            - containerPort: 8080
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/backend/data
+              name: llama-webui-claim0
+      restartPolicy: Always
+      volumes:
+        - name: llama-webui-claim0
+          persistentVolumeClaim:
+            claimName: llama-webui-claim0
+status: {}
