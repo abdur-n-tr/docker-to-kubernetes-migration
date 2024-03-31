@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.ap.entrypoints: websecure
+    traefik.http.routers.ap.middlewares: ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file
+    traefik.http.routers.ap.rule: Host(`ap.`)
+    traefik.http.routers.ap.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ap
+  name: ap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ap
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        traefik.enable: "true"
+        traefik.http.routers.ap.entrypoints: websecure
+        traefik.http.routers.ap.middlewares: ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file
+        traefik.http.routers.ap.rule: Host(`ap.`)
+        traefik.http.routers.ap.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: ap
+    spec:
+      containers:
+        - env:
+            - name: AP_ENGINE_EXECUTABLE_PATH
+              value: dist/packages/engine/main.js
+            - name: AP_ENVIRONMENT
+              value: prod
+            - name: AP_EXECUTION_MODE
+              value: UNSANDBOXED
+            - name: AP_POSTGRES_DATABASE
+              value: activepieces
+            - name: AP_POSTGRES_HOST
+              value: ap-postgres
+            - name: AP_POSTGRES_PASSWORD
+              value: activepieces
+            - name: AP_POSTGRES_PORT
+              value: "5432"
+            - name: AP_POSTGRES_USERNAME
+              value: activepieces
+            - name: AP_REDIS_HOST
+              value: ap-redis
+            - name: AP_REDIS_PORT
+              value: "6379"
+            - name: AP_SANDBOX_RUN_TIME_SECONDS
+              value: "600"
+            - name: AP_TELEMETRY_ENABLED
+              value: "true"
+            - name: AP_TEMPLATES_SOURCE_URL
+              value: '"https://cloud.activepieces.com/api/v1/flow-templates"'
+            - name: AP_TRIGGER_DEFAULT_POLL_INTERVAL
+              value: "5"
+            - name: AP_WEBHOOK_TIMEOUT_SECONDS
+              value: "30"
+          image: activepieces/activepieces:0.14.3
+          name: ap
+          resources: {}
+      restartPolicy: Always
+status: {}

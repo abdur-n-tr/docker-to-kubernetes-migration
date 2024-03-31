@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ide
+  name: ide
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ide
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: ide
+    spec:
+      containers:
+        - env:
+            - name: DEFAULT_WORKSPACE
+              value: /workspace
+            - name: DOCKER_MODS
+              value: linuxserver/mods:universal-package-install|linuxserver/mods:universal-docker-in-docker|linuxserver/mods:code-server-awscli|linuxserver/mods:code-server-zsh|linuxserver/mods:code-server-python3|linuxserver/mods:code-server-nodejs|linuxserver/mods:universal-git|linuxserver/mods:code-server-npmglobal
+            - name: INSTALL_PACKAGES
+              value: btop|screen|htop|python-is-python3|apt-transport-https|software-properties-common|gnupg-agent|build-essential
+            - name: INSTALL_PIP_PACKAGES
+              value: ib_insync|pandas|numpy|pipx|httpie|textual|matplotlib|prompt_toolkit|pytermgui
+            - name: PASSWORD
+              value: 123456Eg
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: SUDO_PASSWORD
+              value: 123456Eg
+            - name: VSCODE_EXTENSION_IDS
+              value: hediet.vscode-drawio|prettier-vscode|vscode-python
+          image: ghcr.io/linuxserver/code-server
+          name: ide
+          ports:
+            - containerPort: 8443
+          resources: {}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: ide-claim0
+              readOnly: true
+            - mountPath: /workspace
+              name: ide-claim1
+            - mountPath: /config
+              name: ide-claim2
+      restartPolicy: Always
+      volumes:
+        - name: ide-claim0
+          persistentVolumeClaim:
+            claimName: ide-claim0
+            readOnly: true
+        - name: ide-claim1
+          persistentVolumeClaim:
+            claimName: ide-claim1
+        - name: ide-claim2
+          persistentVolumeClaim:
+            claimName: ide-claim2
+status: {}

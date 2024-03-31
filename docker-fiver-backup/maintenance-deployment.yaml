@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: maintenance
+  name: maintenance
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: maintenance
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: maintenance
+    spec:
+      containers:
+        - env:
+            - name: CONTACT_LINK
+              value: contact us
+            - name: LINK_COLOR
+              value: '#48d1cc'
+            - name: MAIL_ADDRESS
+              value: mail@happycloudcomputing.com
+            - name: MESSAGE
+              value: Sorry for the inconvenience but we're performing some maintenance at the moment. If you need to you can always {{contact}}, otherwise we'll be back online shortly!
+            - name: PORT
+              value: "8090"
+            - name: RESPONSE_CODE
+              value: 503 Service Unavailable
+            - name: TEAM_NAME
+              value: HAPPYCLOUDCOMPUTING
+            - name: THEME
+              value: Light
+            - name: TITLE
+              value: Oops!
+          image: wickerlabs/maintenance
+          name: maintenance
+          ports:
+            - containerPort: 8090
+          resources: {}
+      restartPolicy: Always
+status: {}

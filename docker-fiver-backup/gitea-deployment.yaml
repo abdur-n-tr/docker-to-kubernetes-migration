@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.gitea.entrypoints: websecure
+    traefik.http.routers.gitea.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+    traefik.http.routers.gitea.rule: Host(`git.`)
+    traefik.http.routers.gitea.tls.certresolver: leresolver
+    traefik.http.services.gitea.loadbalancer.server.port: "3000"
+  creationTimestamp: null
+  labels:
+    io.kompose.service: gitea
+  name: gitea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: gitea
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        traefik.enable: "true"
+        traefik.http.routers.gitea.entrypoints: websecure
+        traefik.http.routers.gitea.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+        traefik.http.routers.gitea.rule: Host(`git.`)
+        traefik.http.routers.gitea.tls.certresolver: leresolver
+        traefik.http.services.gitea.loadbalancer.server.port: "3000"
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: gitea
+    spec:
+      containers:
+        - env:
+            - name: USER_GID
+              value: "1000"
+            - name: USER_UID
+              value: "1000"
+          image: gitea/gitea:latest-rootless
+          name: gitea
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/gitea
+              name: gitea-claim0
+            - mountPath: /etc/gitea
+              name: gitea-claim1
+            - mountPath: /etc/timezone
+              name: timezone-volume
+              readOnly: true
+            - mountPath: /etc/localtime
+              name: localtime-volume
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: gitea-claim0
+          persistentVolumeClaim:
+            claimName: gitea-claim0
+        - name: gitea-claim1
+          persistentVolumeClaim:
+            claimName: gitea-claim1
+        - name: timezone-volume
+          hostPath:
+            path: /etc/timezone
+        - name: localtime-volume
+          hostPath:
+            path: /etc/localtime
+status: {}
