@@ -49,6 +49,10 @@ spec:
             - mountPath: /app/backend/data
               name: llama-webui-claim0
       restartPolicy: Always
+      # hostAliases:
+      #   - hostnames:
+      #       - host-gateway
+      #     ip: host.docker.internal
       volumes:
         - name: llama-webui-claim0
           persistentVolumeClaim:
