@@ -25,10 +25,6 @@ spec:
         io.kompose.network/net: "true"
         io.kompose.service: ap-postgres
     spec:
-      initContainers:
-        - name: wait-for-postgres
-          image: busybox
-          command: ['sh', '-c', 'sleep 120;']
       containers:
         - env:
             - name: POSTGRES_DB
