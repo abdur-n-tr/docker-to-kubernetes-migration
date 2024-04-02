@@ -1,0 +1,6 @@
+# https://artifacthub.io/packages/helm/nicholaswilde/etherpad
+# https://github.com/ether/etherpad-lite/blob/develop/doc/docker.adoc
+
+TITLE: NomPad
+DEFAULT_PAD_TEXT: Le service EtherPad de Nom
+ADMIN_PASSWORD: abc123
