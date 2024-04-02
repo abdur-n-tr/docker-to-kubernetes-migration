@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.network/net: "true"
+    io.kompose.service: authelia-db
+  name: authelia-db
+spec:
+  containers:
+    - env:
+        - name: MYSQL_DATABASE
+          value: authelia
+        - name: MYSQL_PASSWORD
+          value: mysecretpassword
+        - name: MYSQL_ROOT_PASSWORD
+          value: mysecretrootpassword
+        - name: MYSQL_USER
+          value: authelia
+      image: mariadb:10.6
+      startupProbe:
+        exec:
+          command:
+            - sh
+            - -c
+            - mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}
+        initialDelaySeconds: 10
+        failureThreshold: 30
+        periodSeconds: 10
+        timeoutSeconds: 10
+      livenessProbe:
+        exec:
+          command:
+            - sh
+            - -c
+            - mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}
+        initialDelaySeconds: 10
+        failureThreshold: 3
+        periodSeconds: 60
+        timeoutSeconds: 10
+      name: authelia-db
+      resources: {}
+      volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: authelia-db-claim0
+  restartPolicy: OnFailure
+  volumes:
+    - name: authelia-db-claim0
+      persistentVolumeClaim:
+        claimName: authelia-db-claim0
+status: {}

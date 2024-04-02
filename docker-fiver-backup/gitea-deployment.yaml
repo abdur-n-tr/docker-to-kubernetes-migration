@@ -43,7 +43,16 @@ spec:
               value: "1000"
             - name: USER_UID
               value: "1000"
-          image: gitea/gitea:latest-rootless
+          image: gitea/gitea:1.17.2
+          livenessProbe:
+            exec:
+              command:
+                - curl
+                - --fail
+                - http://localhost:3000/api/v1/status
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 10
           name: gitea
           resources: {}
           volumeMounts:
