@@ -34,6 +34,11 @@ spec:
         io.kompose.network/net: "true"
         io.kompose.service: ap
     spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox
+        command: ['sh', '-c', 'while ! nc -z ap-postgres 5432; do echo "Waiting for PostgreSQL"; sleep 1; done']
+        # command: ['sh', '-c', 'until nc -z 10.1.0.78:5432; do echo "Waiting for PostgreSQL"; sleep 1; done;']
       containers:
         - env:
             - name: AP_ENGINE_EXECUTABLE_PATH

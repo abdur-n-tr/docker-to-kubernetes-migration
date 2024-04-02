@@ -25,6 +25,10 @@ spec:
         io.kompose.network/net: "true"
         io.kompose.service: ap-postgres
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox
+          command: ['sh', '-c', 'sleep 120;']
       containers:
         - env:
             - name: POSTGRES_DB
@@ -35,6 +39,16 @@ spec:
               value: activepieces
           image: postgres:14.4
           name: ap-postgres
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 10
+            failureThreshold: 3
+            periodSeconds: 60
+            timeoutSeconds: 10
           resources: {}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
