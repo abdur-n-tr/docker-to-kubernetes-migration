@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: glances
+  name: glances
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: glances
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: glances
+    spec:
+      containers:
+        - env:
+            - name: GLANCES_OPT
+              value: -w
+          image: nicolargo/glances
+          name: glances
+          ports:
+            - containerPort: 61208
+          resources: {}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: glances-claim0
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: glances-claim0
+          persistentVolumeClaim:
+            claimName: glances-claim0
+            readOnly: true
+status: {}

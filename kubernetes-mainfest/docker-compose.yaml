@@ -283,4 +283,18 @@ services:
       - "5800:5800"
       - "4000:4000"
 
-  
+  glances:
+    image: nicolargo/glances
+    container_name: glances
+    restart: unless-stopped
+    pid: host
+    privileged: true
+    #    network_mode: "host"
+    environment:
+      GLANCES_OPT: "-w"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - ./glances/glances.config:/glances/conf/glances.conf
+    ports: [61208:61208]
+    networks:
+      - net
