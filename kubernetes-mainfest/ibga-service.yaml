@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ibga
+  name: ibga
+spec:
+  ports:
+    - name: "5800"
+      port: 5800
+      targetPort: 5800
+    - name: "4000"
+      port: 4000
+      targetPort: 4000
+  selector:
+    io.kompose.service: ibga
+status:
+  loadBalancer: {}

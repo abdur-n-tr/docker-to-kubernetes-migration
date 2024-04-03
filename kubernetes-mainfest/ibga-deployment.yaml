@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ibga
+  name: ibga
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ibga
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: ibga
+    spec:
+      containers:
+        - env:
+            - name: IBGA_EXPORT_LOGS
+              value: "true"
+            - name: IBGA_LOG_EXPORT_DIR
+              value: /home/ibg_logs
+            - name: IB_APILOG
+              value: data
+            - name: IB_LOGINTAB
+              value: IB API
+            - name: IB_LOGINTYPE
+              value: Paper Trading
+            - name: IB_LOGLEVEL
+              value: Error
+            - name: IB_LOGOFF
+              value: 11:55 PM
+            - name: IB_PASSWORD
+              value: 123456Eg
+            - name: IB_REGION
+              value: America
+            - name: IB_TIMEZONE
+              value: America/New York
+            - name: IB_USERNAME
+              value: omega703
+            - name: TERM
+              value: xterm
+          image: heshiming/ibga
+          name: ibga
+          ports:
+            - containerPort: 5800
+            - containerPort: 4000
+          resources: {}
+          volumeMounts:
+            - mountPath: /home/ibg
+              name: ibga-claim0
+            - mountPath: /home/ibg_settings
+              name: ibga-claim1
+            - mountPath: /home/ibg_logs
+              name: ibga-claim2
+      restartPolicy: Always
+      volumes:
+        - name: ibga-claim0
+          persistentVolumeClaim:
+            claimName: ibga-claim0
+        - name: ibga-claim1
+          persistentVolumeClaim:
+            claimName: ibga-claim1
+        - name: ibga-claim2
+          persistentVolumeClaim:
+            claimName: ibga-claim2
+status: {}
