@@ -1,0 +1,67 @@
+---
+#
+# IMPORTANT NOTE
+#
+# This chart inherits from our common library chart. You can check the default values/options here:
+# https://github.com/nicholaswilde/helm-charts/tree/main/charts/common/values.yaml
+#
+
+image:
+  repository: ghcr.io/nicholaswilde/etherpad
+  pullPolicy: IfNotPresent
+  tag: "version-1.8.14"
+
+secret: {}
+
+# See more environment variables in the etherpad documentation
+# https://github.com/ether/etherpad-lite/blob/develop/doc/docker.md
+# For Mariadb, use DB_TYPE: mysql https://github.com/ether/etherpad-lite/issues/4214
+env:
+  # DB_TYPE: mysql
+  TITLE: NomPad
+  DEFAULT_PAD_TEXT: Le service EtherPad de Nom
+  ADMIN_PASSWORD: abc123
+
+service:
+  port:
+    port: 9001
+
+ingress:
+  enabled: false
+
+persistence:
+  data:
+    enabled: true
+    emptyDir: false
+    mountPath: /opt/etherpad-lite/var
+    accessMode: ReadWriteOnce
+    size: 1Gi
+  app:
+    enabled: true
+    emptyDir: false
+    mountPath: /opt/etherpad-lite/app
+    accessMode: ReadWriteOnce
+    size: 1Gi
+
+# Enable mariadb
+# https://github.com/nicholaswilde/helm-charts/blob/main/charts/mariadb/values.yaml
+mariadb:
+  enabled: false
+  secret:
+    MYSQL_ROOT_PASSWORD: "etherpad-pass"
+    MYSQL_PASSWORD: "etherpad-pass"
+  env:
+    MYSQL_USER: "etherpad"
+    MYSQL_DATABASE: "etherpad-mariadb"
+  fullnameOverride: etherpad-mariadb
+
+# Enable postgres
+# https://github.com/nicholaswilde/helm-charts/blob/main/charts/postgres/values.yaml
+postgres:
+  enabled: false
+  secret:
+    POSTGRES_PASSWORD: "etherpad-pass"
+  env:
+    POSTGRES_USER: "etherpad"
+    POSTGRES_DB: "etherpad-postgres"
+  fullnameOverride: etherpad-postgres

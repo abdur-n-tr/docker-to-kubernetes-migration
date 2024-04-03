@@ -1,0 +1,29 @@
+annotations:
+  artifacthub.io/changes: |
+    - kind: changed
+      description: Change tag to version-110.4.20mariabionic to reduce the number of chart updates.
+  artifacthub.io/images: |
+    - name: mariadb
+      image: ghcr.io/linuxserver/mariadb:version-110.4.20mariabionic
+apiVersion: v2
+appVersion: 110.4.20
+dependencies:
+- name: common
+  repository: https://nicholaswilde.github.io/helm-charts/
+  version: ~0.1.13
+description: The open source relational database
+home: https://github.com/nicholaswilde/helm-charts/tree/main/charts/mariadb
+icon: https://github.com/linuxserver/docker-templates/raw/master/linuxserver.io/img/mariadb-icon.png
+keywords:
+- db
+- database
+- mariadb
+maintainers:
+- email: ncwilde43@gmail.com
+  name: nicholaswilde
+name: mariadb
+sources:
+- https://mariadb.org/
+- https://github.com/linuxserver/docker-mariadb
+type: application
+version: 1.0.5

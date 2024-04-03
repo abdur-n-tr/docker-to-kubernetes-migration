@@ -1,0 +1,39 @@
+---
+#
+# IMPORTANT NOTE
+#
+# This chart inherits from our common library chart. You can check the default values/options here:
+# https://github.com/nicholaswilde/helm-charts/tree/main/charts/common/values.yaml
+#
+
+image:
+  repository: ghcr.io/linuxserver/mariadb
+  pullPolicy: IfNotPresent
+  tag: "version-110.4.20mariabionic"
+
+secret:
+  MYSQL_ROOT_PASSWORD: "ROOT_ACCESS_PASSWORD"
+  # MYSQL_PASSWORD: "DATABASE_PASSWORD"
+
+# See more environment variables in the mariadb documentation
+# https://github.com/linuxserver/docker-mariadb#parameters
+env:
+  TZ: "America/Los_Angeles"
+  # PUID: "1000"
+  # PGID: "1000"
+  # MYSQL_USER: "MYSQL_USER"
+  # REMOTE_SQL: "http://URL1/your.sql,https://URL2/your.sql"
+  # MYSQL_DATABASE: "USER_DB_NAME #optional"
+
+service:
+  port:
+    port: 3306
+
+ingress:
+  enabled: false
+
+persistence:
+  config:
+    enabled: false
+    emptyDir: false
+    mountPath: /config
