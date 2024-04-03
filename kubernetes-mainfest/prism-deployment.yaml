@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: prism
+  name: prism
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: prism
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.network/prism: "true"
+        io.kompose.service: prism
+    spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox
+        command: ['sh', '-c', 'while ! nc -z prism-db 3306; do echo "Waiting for Database Conn"; sleep 1; done']
+      containers:
+        - env:
+            - name: PHOTOPRISM_DARKTABLE_PRESETS
+              value: "false"
+            - name: PHOTOPRISM_DATABASE_DRIVER
+              value: mysql
+            - name: PHOTOPRISM_DATABASE_NAME
+            - name: PHOTOPRISM_DATABASE_PASSWORD
+            - name: PHOTOPRISM_DATABASE_SERVER
+              value: prism-db:3306
+            - name: PHOTOPRISM_DATABASE_USER
+            - name: PHOTOPRISM_DEBUG
+              value: "false"
+            - name: PHOTOPRISM_DETECT_NSFW
+              value: "false"
+            - name: PHOTOPRISM_DISABLE_SETTINGS
+              value: "false"
+            - name: PHOTOPRISM_DISABLE_TENSORFLOW
+              value: "false"
+            - name: PHOTOPRISM_DISABLE_WEBDAV
+              value: "false"
+            - name: PHOTOPRISM_EXPERIMENTAL
+              value: "false"
+            - name: PHOTOPRISM_HTTP_COMPRESSION
+              value: gzip
+            - name: PHOTOPRISM_PUBLIC
+              value: "true"
+            - name: PHOTOPRISM_READONLY
+              value: "false"
+            - name: PHOTOPRISM_SITE_CAPTION
+              value: Browse Your Life
+            - name: PHOTOPRISM_SITE_TITLE
+              value: PhotoPrism
+            - name: PHOTOPRISM_SITE_URL
+              value: https://prism.happycloudcomputing.com
+            - name: PHOTOPRISM_UPLOAD_NSFW
+              value: "true"
+          image: photoprism/photoprism:latest
+          name: prism
+          ports:
+            - containerPort: 2342
+          resources: {}
+          volumeMounts:
+            - mountPath: /photoprism/originals
+              name: prism-claim0
+            - mountPath: /photoprism/storage
+              name: prism-claim1
+      restartPolicy: Always
+      volumes:
+        - name: prism-claim0
+          persistentVolumeClaim:
+            claimName: prism-claim0
+        - name: prism-claim1
+          persistentVolumeClaim:
+            claimName: prism-claim1
+status: {}
