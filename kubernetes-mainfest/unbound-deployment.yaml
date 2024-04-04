@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: unbound
+  name: unbound
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: unbound
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/private_network: "true"
+        io.kompose.service: unbound
+    spec:
+      initContainers:
+        - name: create-empty-config
+          image: busybox
+          command: 
+            - "/bin/sh"
+            - "-c"
+            - |
+              touch /opt/unbound/etc/unbound/a-records.conf
+              touch /opt/unbound/etc/unbound/srv-records.conf
+              touch /opt/unbound/etc/unbound/forward-records.conf
+          volumeMounts:
+            - mountPath: /opt/unbound/etc/unbound/
+              name: unbound-claim0
+      containers:
+        - image: mvance/unbound:latest
+          name: unbound
+          resources: {}
+          volumeMounts:
+            - mountPath: /opt/unbound/etc/unbound/
+              name: unbound-claim0
+      hostname: unbound
+      restartPolicy: Always
+      volumes:
+        - name: unbound-claim0
+          persistentVolumeClaim:
+            claimName: unbound-claim0
+status: {}
