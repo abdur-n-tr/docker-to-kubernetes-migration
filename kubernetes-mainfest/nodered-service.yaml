@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.nodered.entrypoints: websecure
+    traefik.http.routers.nodered.middlewares: security-headers@file, auth@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+    traefik.http.routers.nodered.rule: Host(`nodered.`)
+    traefik.http.routers.nodered.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: nodered
+  name: nodered
+spec:
+  ports:
+    - name: "1880"
+      port: 1880
+      targetPort: 1880
+  selector:
+    io.kompose.service: nodered
+status:
+  loadBalancer: {}

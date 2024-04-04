@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.pinnwand.routers.main.entrypoints: websecure
+    traefik.pinnwand.routers.main.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+    traefik.pinnwand.routers.main.rule: Host(`paste.`)
+    traefik.pinnwand.routers.main.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: pinnwand
+  name: pinnwand
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: pinnwand
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        traefik.enable: "true"
+        traefik.pinnwand.routers.main.entrypoints: websecure
+        traefik.pinnwand.routers.main.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+        traefik.pinnwand.routers.main.rule: Host(`paste.`)
+        traefik.pinnwand.routers.main.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: pinnwand
+    spec:
+      containers:
+        - image: ghcr.io/supakeen/pinnwand:latest
+          name: pinnwand
+          resources: {}
+      restartPolicy: Always
+status: {}

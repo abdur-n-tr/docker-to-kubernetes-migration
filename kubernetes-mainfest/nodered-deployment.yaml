@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.nodered.entrypoints: websecure
+    traefik.http.routers.nodered.middlewares: security-headers@file, auth@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+    traefik.http.routers.nodered.rule: Host(`nodered.`)
+    traefik.http.routers.nodered.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: nodered
+  name: nodered
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nodered
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        traefik.enable: "true"
+        traefik.http.routers.nodered.entrypoints: websecure
+        traefik.http.routers.nodered.middlewares: security-headers@file, auth@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+        traefik.http.routers.nodered.rule: Host(`nodered.`)
+        traefik.http.routers.nodered.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: nodered
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+          image: nodered/node-red:latest
+          name: nodered
+          ports:
+            - containerPort: 1880
+          resources: {}
+          volumeMounts:
+            - mountPath: /data
+              name: nodered-claim0
+      restartPolicy: Always
+      volumes:
+        - name: nodered-claim0
+          persistentVolumeClaim:
+            claimName: nodered-claim0
+status: {}

@@ -467,3 +467,69 @@ services:
     volumes:
       - ./wireguard/config:/config
       - /lib/modules:/lib/modules
+
+  error-pages:
+    container_name: error-pages
+    image: tarampampam/error-pages:latest # Using the latest tag is highly discouraged. Please, use tags in X.Y.Z format
+    depends_on:
+      - traefik
+    networks:
+      - net
+    environment:
+      TEMPLATE_NAME: l7-dark # set the error pages template
+
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: always
+    networks:
+      - net
+    ports: [80:80, 443:443]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik:/etc/traefik/
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_DEBUG=true
+      - WATCHTOWER_SCHEDULE=0 0 * 1 * *
+
+  pinnwand:
+    image: ghcr.io/supakeen/pinnwand:latest
+    container_name: pinnwand
+    networks: [net]
+    restart: always
+    #ports:
+      #- 1377:8000
+    labels:
+      - traefik.enable=true
+      - traefik.pinnwand.routers.main.rule=Host(`paste.${HCC}`)
+      - traefik.pinnwand.routers.main.entrypoints=websecure
+      - traefik.pinnwand.routers.main.tls.certresolver=leresolver
+      - traefik.pinnwand.routers.main.middlewares=security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+
+  nodered:
+    image: nodered/node-red:latest
+    container_name: nodered
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./nodered:/data
+    ports:
+      - 1880:1880
+    restart: unless-stopped
+    networks:
+      - net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nodered.entrypoints=websecure
+      - traefik.http.routers.nodered.rule=Host(`nodered.${HCC}`)
+      - traefik.http.routers.nodered.tls.certresolver=leresolver
+      - traefik.http.routers.nodered.middlewares=security-headers@file, auth@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
