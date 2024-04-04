@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: wireguard
+  name: wireguard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: wireguard
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/private_network: "true"
+        io.kompose.service: wireguard
+    spec:
+      containers:
+        - env:
+            - name: INTERNAL_SUBNET
+              value: 10.6.0.0
+            - name: PEERDNS
+              value: 10.2.0.100
+            - name: PEERS
+              value: "3"
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: SERVERPORT
+              value: "51820"
+            - name: SERVERURL
+              value: wg.
+          image: linuxserver/wireguard
+          name: wireguard
+          ports:
+            - containerPort: 51820
+              protocol: UDP
+          resources: {}
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_MODULE
+          volumeMounts:
+            - mountPath: /config
+              name: wireguard-claim0
+            - mountPath: /lib/modules
+              name: wireguard-claim1
+      restartPolicy: Always
+      volumes:
+        - name: wireguard-claim0
+          persistentVolumeClaim:
+            claimName: wireguard-claim0
+        - name: wireguard-claim1
+          persistentVolumeClaim:
+            claimName: wireguard-claim1
+status: {}

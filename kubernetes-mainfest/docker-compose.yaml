@@ -298,3 +298,172 @@ services:
     ports: [61208:61208]
     networks:
       - net
+
+  prism-db:
+    container_name: prism-db
+    image: jbergstroem/mariadb-alpine
+    #image: yobasystems/alpine-mariadb
+    networks:
+      - prism
+    volumes:
+      - ./photoprism/db:/var/lib/mysql
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+      # - SKIP_INNODB="yes"
+    restart: unless-stopped
+  
+  prism:
+    image: photoprism/photoprism:latest
+    container_name: prism
+    restart: unless-stopped
+    depends_on:
+      - prism-db
+    networks:
+      - net
+      - prism
+    volumes:
+      - ./photoprism/originals:/photoprism/originals
+      - ./photoprism/storage:/photoprism/storage
+    ports: [2342:2342]
+    environment:
+      #PHOTOPRISM_ADMIN_PASSWORD: "insecure"          # PLEASE CHANGE: Your initial admin password (min 4 characters)
+      PHOTOPRISM_HTTP_COMPRESSION: "gzip" # Improves transfer speed and bandwidth utilization (none or gzip)
+      PHOTOPRISM_DEBUG: "false" # Run in debug mode (shows additional log messages)
+      PHOTOPRISM_PUBLIC: "true" # No authentication required (disables password protection)
+      PHOTOPRISM_READONLY: "false" # Don't modify originals directory (reduced functionality)
+      PHOTOPRISM_EXPERIMENTAL: "false" # Enables experimental features
+      PHOTOPRISM_DISABLE_WEBDAV: "false" # Disables built-in WebDAV server
+      PHOTOPRISM_DISABLE_SETTINGS: "false" # Disables Settings in Web UI
+      PHOTOPRISM_DISABLE_TENSORFLOW: "false" # Disables using TensorFlow for image classification
+      PHOTOPRISM_DARKTABLE_PRESETS: "false" # Enables Darktable presets and disables concurrent RAW conversion
+      PHOTOPRISM_DETECT_NSFW: "false" # Flag photos as private that MAY be offensive (requires TensorFlow)
+      PHOTOPRISM_UPLOAD_NSFW: "true" # Allow uploads that MAY be offensive
+      PHOTOPRISM_DATABASE_DRIVER: "mysql" # Use MariaDB (or MySQL) instead of SQLite for improved performance
+      PHOTOPRISM_DATABASE_SERVER: prism-db:3306 # MariaDB database server (hostname:port)
+      PHOTOPRISM_DATABASE_NAME: ${DB_NAME} # MariaDB database schema name
+      PHOTOPRISM_DATABASE_USER: ${DB_USER} # MariaDB database user name
+      PHOTOPRISM_DATABASE_PASSWORD: ${DB_PASS} # MariaDB database user password
+      PHOTOPRISM_SITE_URL: https://prism.happycloudcomputing.com
+      PHOTOPRISM_SITE_TITLE: "PhotoPrism"
+      PHOTOPRISM_SITE_CAPTION: "Browse Your Life"
+      # You may optionally set a user / group id using environment variables if your Docker version or NAS does not
+      # support this natively (see next example):
+      # UID: 1000
+      # GID: 1000
+      # UMASK: 0000
+    # Uncomment and edit the following line to set a specific user / group id (native):
+    # user: "1000:1000"
+
+  flame:
+    image: pawelmalak/flame:latest
+    container_name: flame
+    restart: unless-stopped
+    networks:
+      - net
+    volumes:
+      - ./flame:/app/data
+    ports:
+      - "5005:5005"
+    environment:
+      - PASSWORD=123456Eg
+
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    networks:
+      - net
+    restart: always
+    environment:
+      - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED}
+      - DOMAIN=https://${HCC}
+      - ADMIN_TOKEN=$ADMIN_TOKEN
+    volumes:
+      - ./vw-data:/data
+      #- traefik.docker.network=net
+      # Entry Point for https
+      #- traefik.http.routers.vaultwarden-secure.entrypoints=websecure
+      #- traefik.http.routers.vaultwarden-secure.rule=Host(`vault.${HCC}`)
+      #- traefik.http.routers.vaultwarden-secure.service=vaultwarden-service
+      #- traefik.http.services.vaultwarden-service.loadbalancer.server.port=80
+      #- traefik.http.routers.vaultwarden-service.tls.certresolver=leresolver
+      #- traefik.http.routers.vaultwarden-service.middlewares=ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file
+      # websocket
+      #- traefik.http.routers.vaultwarden-ws.entrypoints=websecure
+      #- traefik.http.routers.vaultwarden-ws.rule=Host(`vault.${HCC}`) && Path(`/notifications/hub`)
+      #- "traefik.http.middlewares.vaultwarden-ws.stripprefix.prefixes=/notifications/hub"
+      #- traefik.http.middlewares.vaultwarden-ws.stripprefix.forceSlash=false
+      #- traefik.http.routers.vaultwarden-ws.service=vaultwarden-websocket
+      #- traefik.http.services.vaultwarden-websocket.loadbalancer.server.port=3012
+      #- traefik.http.routers.vaultwarden-websocket.tls.certresolver=leresolver
+      #- traefik.http.routers.vaultwarden-websocket.middlewares=ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file
+
+  unbound:
+    image: "mvance/unbound:latest"
+    container_name: unbound
+    restart: unless-stopped
+    hostname: "unbound"
+    volumes:
+      - ./unbound:/opt/unbound/etc/unbound/
+    networks:
+      private_network:
+        ipv4_address: 10.2.0.200
+
+  pihole:
+    depends_on: [unbound]
+    container_name: pihole
+    image: pihole/pihole:latest
+    restart: unless-stopped
+    hostname: pihole
+    networks:
+      net:
+      private_network:
+        ipv4_address: 10.2.0.100
+    cap_add:
+      - NET_ADMIN
+    dns: # Recommended but not required (DHCP needs NET_ADMIN) # https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+      - 127.0.0.1
+      - 10.2.0.200 # Points to unbound
+    environment:
+      WEBPASSWORD: "" # Blank password - Can be whatever you want.
+      ServerIP: 10.1.0.100 # Internal IP of pihole
+      DNS1: 10.2.0.200 # Unbound IP
+      DNS2: 10.2.0.200 # If we don't specify two, it will auto pick google.
+    volumes: # Volumes store your data between container upgrades
+      - ./pihole/etc-pihole/:/etc/pihole/
+      - ./pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/
+
+  wireguard:
+    depends_on: [unbound, pihole]
+    image: linuxserver/wireguard
+    container_name: wireguard
+    restart: unless-stopped
+    networks:
+      private_network:
+        ipv4_address: 10.2.0.3
+    ports:
+      - "51820:51820/udp"
+    dns:
+      - 10.2.0.100 # Points to pihole
+      - 10.2.0.200 # Points to unbound
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - SERVERURL=wg.${HCC} #optional - For use with DDNS (Uncomment to use)
+      - SERVERPORT=51820
+      - PEERS=3 # How many peers to generate for you (clients)
+      - PEERDNS=10.2.0.100 # Set it to point to pihole
+      - INTERNAL_SUBNET=10.6.0.0
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    volumes:
+      - ./wireguard/config:/config
+      - /lib/modules:/lib/modules
