@@ -533,3 +533,81 @@ services:
       - traefik.http.routers.nodered.rule=Host(`nodered.${HCC}`)
       - traefik.http.routers.nodered.tls.certresolver=leresolver
       - traefik.http.routers.nodered.middlewares=security-headers@file, auth@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+
+  authelia:
+    image: authelia/authelia
+    container_name: authelia
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./authelia:/config
+    networks:
+      - net
+    expose:
+      - 9091
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.authelia.rule=Host(`auth.${HCC}`)
+      - traefik.http.routers.authelia.entrypoints=websecure
+      - traefik.http.routers.authelia.tls.certresolver=leresolver
+      - traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://auth.${HCC}.com/
+      - traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true
+      - traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User, Remote-Groups, Remote-Name, Remote-Email
+      - traefik.http.middlewares.authelia-basic.forwardauth.address=http://authelia:9091/api/verify?auth=basic
+      - traefik.http.middlewares.authelia-basic.forwardauth.trustForwardHeader=true
+      - traefik.http.middlewares.authelia-basic.forwardauth.authResponseHeaders=Remote-User, Remote-Groups, Remote-Name, Remote-Email
+
+  penpot-frontend:
+    image: "penpotapp/frontend:latest"
+    ports:
+    - 9001:80
+    volumes:
+    - penpot_assets_data:/opt/data
+    env_file:
+    - config.env
+    depends_on:
+    - penpot-backend
+    - penpot-exporter
+    networks:
+    - penpot
+
+  penpot-backend:
+    image: "penpotapp/backend:latest"
+    volumes:
+    - penpot_assets_data:/opt/data
+    depends_on:
+    - penpot-postgres
+    - penpot-redis
+    env_file:
+    - config.env
+    networks:
+    - penpot
+  
+  penpot-exporter:
+    image: "penpotapp/exporter:latest"
+    environment:
+    # Don't touch it; this uses internal docker network to
+    # communicate with the frontend.
+    - PENPOT_PUBLIC_URI=http://penpot-frontend
+    networks:
+    - penpot
+
+  penpot-postgres:
+    image: "postgres:13"
+    restart: always
+    stop_signal: SIGINT
+    environment:
+    - POSTGRES_INITDB_ARGS=--data-checksums
+    - POSTGRES_DB=penpot
+    - POSTGRES_USER=penpot
+    - POSTGRES_PASSWORD=penpot
+    volumes:
+    - penpot_postgres_data:/var/lib/postgresql/data
+    networks:
+    - penpot
+
+  penpot-redis:
+    image: redis:6
+    restart: always
+    networks:
+    - penpot
