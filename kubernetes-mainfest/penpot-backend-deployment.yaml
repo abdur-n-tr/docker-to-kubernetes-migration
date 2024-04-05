@@ -47,6 +47,24 @@ spec:
           image: penpotapp/backend:latest
           name: penpot-backend
           resources: {}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 6060
+              host: localhost
+            initialDelaySeconds: 10
+            failureThreshold: 3
+            periodSeconds: 60
+            timeoutSeconds: 10
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 6060
+          #     host: localhost
+          #   initialDelaySeconds: 10
+          #   failureThreshold: 3
+          #   periodSeconds: 60
+          #   timeoutSeconds: 10
           volumeMounts:
             - mountPath: /opt/data
               name: penpot-assets-data
