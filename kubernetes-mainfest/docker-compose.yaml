@@ -611,3 +611,50 @@ services:
     restart: always
     networks:
     - penpot
+
+  browserless:
+    container_name: browserless
+    image: browserless/chrome
+    networks:
+      - net
+    ports: [8081:3000]
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.browserless.entrypoints=websecure
+      - traefik.http.routers.browserless.rule=Host(`brow.${HCC}`)
+      - traefik.http.routers.browserless.tls.certresolver=leresolver
+      - traefik.http.routers.browserless.middlewares=ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file, auth@file
+
+  qbittorrent:
+    image: linuxserver/qbittorrent
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK_SET=022
+      - WEBUI_PORT=8093
+    volumes:
+      - ./qbittorrent/config:/config
+      - ./qbittorrent/torrent-files/:/torrents
+      - ./qbittorrent/certs:/certs
+      - ./qbittorrent/local/logs:/logs
+      - ./downloads/Completed:/downloads/Completed
+      - ./downloads/Temp:/downloads/Temp
+    ports:
+      - 8093:8093
+      - 6881:6881
+      - 6881:6881/udp
+      - 10625:10625
+    restart: unless-stopped
+    networks:
+      - net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.bt.entrypoints=websecure
+      - traefik.http.routers.bt.rule=Host(`qbit.${HCC}`)
+      - traefik.http.routers.bt.tls.certresolver=leresolver
+      - traefik.http.services.bt.loadbalancer.server.port=8093
+      - traefik.http.services.bt.loadbalancer.passhostheader=false
+      - traefik.http.routers.bt.middlewares=ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file, auth@file
+      
