@@ -694,3 +694,37 @@ services:
     - traefik.http.routers.umami.tls.certresolver=leresolver
     - traefik.http.routers.umami.middlewares=ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file #, auth@file
 
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./jackett:/config
+      - ./qbittorrent/torrent-files/:/torrents
+
+  syncthing:
+    image: ghcr.io/linuxserver/syncthing
+    container_name: syncthing
+    restart: unless-stopped
+    networks:
+      - net
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./syncthing/config:/config
+      - ./syncthing/data1:/data1
+      - ./syncthing/data2:/data2
+    ports:
+      - 8384:8384
+      - 22000:22000/tcp
+      - 22000:22000/udp
+      - 21027:21027/udp
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.syncthing.entrypoints=websecure
+      - traefik.http.routers.syncthing.rule=Host(`syncthing.${HCC}`)
+      - traefik.http.routers.syncthing.tls.certresolver=leresolver
+      - traefik.http.routers.syncthing.middlewares=ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file #, auth@file

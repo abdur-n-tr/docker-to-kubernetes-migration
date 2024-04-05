@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.syncthing.entrypoints: websecure
+    traefik.http.routers.syncthing.middlewares: ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file
+    traefik.http.routers.syncthing.rule: Host(`syncthing.`)
+    traefik.http.routers.syncthing.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: syncthing
+  name: syncthing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: syncthing
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        traefik.enable: "true"
+        traefik.http.routers.syncthing.entrypoints: websecure
+        traefik.http.routers.syncthing.middlewares: ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file
+        traefik.http.routers.syncthing.rule: Host(`syncthing.`)
+        traefik.http.routers.syncthing.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: syncthing
+    spec:
+      containers:
+        - env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+          image: ghcr.io/linuxserver/syncthing
+          name: syncthing
+          ports:
+            - containerPort: 8384
+            - containerPort: 22000
+            - containerPort: 22000
+              protocol: UDP
+            - containerPort: 21027
+              protocol: UDP
+          resources: {}
+          volumeMounts:
+            - mountPath: /config
+              name: syncthing-claim0
+            - mountPath: /data1
+              name: syncthing-claim1
+            - mountPath: /data2
+              name: syncthing-claim2
+      restartPolicy: Always
+      volumes:
+        - name: syncthing-claim0
+          persistentVolumeClaim:
+            claimName: syncthing-claim0
+        - name: syncthing-claim1
+          persistentVolumeClaim:
+            claimName: syncthing-claim1
+        - name: syncthing-claim2
+          persistentVolumeClaim:
+            claimName: syncthing-claim2
+status: {}
