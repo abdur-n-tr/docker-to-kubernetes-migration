@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.umami.entrypoints: websecure
+    traefik.http.routers.umami.middlewares: ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file
+    traefik.http.routers.umami.rule: Host(`umami.`)
+    traefik.http.routers.umami.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: umami
+  name: umami
+spec:
+  ports:
+    - name: "3000"
+      port: 3000
+      targetPort: 3000
+  selector:
+    io.kompose.service: umami
+status:
+  loadBalancer: {}

@@ -657,4 +657,40 @@ services:
       - traefik.http.services.bt.loadbalancer.server.port=8093
       - traefik.http.services.bt.loadbalancer.passhostheader=false
       - traefik.http.routers.bt.middlewares=ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file, auth@file
+
+  umami-db:
+    image: postgres:12-alpine
+    container_name: umami-db
+    environment:
+      - POSTGRES_DB=umami
+      - POSTGRES_USER=umami
+      - POSTGRES_PASSWORD=umami
+    volumes:
+    - ./umami/sql/schema.postgresql.sql:/docker-entrypoint-initdb.d/schema.postgresql.sql:ro
+    - ./umami/db/:/var/lib/postgresql/data
+    restart: always
+    networks:
+    - umami
       
+  umami:
+    image: ghcr.io/mikecao/umami:postgresql-latest
+    container_name: umami
+    ports:
+    - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://umami:umami@umami-db:5432/umami
+      - DATABASE_TYPE=postgresql
+      - HASH_SALT=replace-me-with-a-random-string
+    depends_on:
+    - umami-db
+    restart: always
+    networks:
+    - net
+    - umami
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.umami.rule=Host(`umami.${HCC}`)
+    - traefik.http.routers.umami.entrypoints=websecure
+    - traefik.http.routers.umami.tls.certresolver=leresolver
+    - traefik.http.routers.umami.middlewares=ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file #, auth@file
+
