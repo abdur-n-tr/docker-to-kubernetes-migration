@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.bt.entrypoints: websecure
+    traefik.http.routers.bt.middlewares: ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file, auth@file
+    traefik.http.routers.bt.rule: Host(`qbit.`)
+    traefik.http.routers.bt.tls.certresolver: leresolver
+    traefik.http.services.bt.loadbalancer.passhostheader: "false"
+    traefik.http.services.bt.loadbalancer.server.port: "8093"
+  creationTimestamp: null
+  labels:
+    io.kompose.service: qbittorrent
+  name: qbittorrent
+spec:
+  ports:
+    - name: "8093"
+      port: 8093
+      targetPort: 8093
+    - name: "6881"
+      port: 6881
+      targetPort: 6881
+    - name: 6881-udp
+      port: 6881
+      protocol: UDP
+      targetPort: 6881
+    - name: "10625"
+      port: 10625
+      targetPort: 10625
+  selector:
+    io.kompose.service: qbittorrent
+status:
+  loadBalancer: {}
