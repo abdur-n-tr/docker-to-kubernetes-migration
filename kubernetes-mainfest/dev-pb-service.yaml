@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.dev-pb.entrypoints: websecure
+    traefik.http.routers.dev-pb.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+    traefik.http.routers.dev-pb.rule: Host(`dev.`) && (PathPrefix(`/_`) || PathPrefix(`/api`))
+    traefik.http.routers.dev-pb.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: dev-pb
+  name: dev-pb
+spec:
+  ports:
+    - name: "8090"
+      port: 8090
+      targetPort: 8090
+  selector:
+    io.kompose.service: dev-pb
+status:
+  loadBalancer: {}

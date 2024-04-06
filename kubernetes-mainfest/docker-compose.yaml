@@ -728,3 +728,45 @@ services:
       - traefik.http.routers.syncthing.rule=Host(`syncthing.${HCC}`)
       - traefik.http.routers.syncthing.tls.certresolver=leresolver
       - traefik.http.routers.syncthing.middlewares=ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file #, auth@file
+
+  rapidbay:
+    image: hauxir/rapidbay:latest
+    container_name: rapidbay
+    environment:
+      - JACKETT_HOST=jackett:9117
+      - JACKETT_API_KEY=y7kd4gm4g49uu8g94t03h9gk0ca8ijk0
+    ports: [5000:5000]
+    networks:
+      - net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rapidbay.entrypoints=websecure
+      - traefik.http.routers.rapidbay.rule=Host(`rapidbay.${HCC}`)
+      - traefik.http.routers.rapidbay.tls.certresolver=leresolver
+      - traefik.http.routers.rapidbay.middlewares=ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file #, auth@file
+    restart: unless-stopped
+
+  dev-pb:
+    container_name: dev-pb
+    image: golang:alpine
+    networks: [net]
+    user: 1000:1000
+    expose: [8090]
+    entrypoint: /pb/entrypoint.sh
+    command: modd # live development
+    working_dir: /pb
+    environment:
+      - HOME=/pb
+      - AUDITLOG=posts,users
+    volumes:
+      - ./pb:/pb
+      - ./sk:/sk
+      - ./go/pkg:/go/pkg
+    labels: # Live development
+      - traefik.enable=true
+      - traefik.http.routers.dev-pb.rule=Host(`dev.${HCC}`) && (PathPrefix(`/_`) || PathPrefix(`/api`))
+      - traefik.http.routers.dev-pb.entrypoints=websecure
+      - traefik.http.routers.dev-pb.tls.certresolver=leresolver
+      - traefik.http.routers.dev-pb.middlewares=security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+
+  

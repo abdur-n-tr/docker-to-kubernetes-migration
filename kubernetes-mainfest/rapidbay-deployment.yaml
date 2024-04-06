@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.rapidbay.entrypoints: websecure
+    traefik.http.routers.rapidbay.middlewares: ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file
+    traefik.http.routers.rapidbay.rule: Host(`rapidbay.`)
+    traefik.http.routers.rapidbay.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: rapidbay
+  name: rapidbay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: rapidbay
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        traefik.enable: "true"
+        traefik.http.routers.rapidbay.entrypoints: websecure
+        traefik.http.routers.rapidbay.middlewares: ratelimit@file, security-headers@file, error-pages-middleware, geoblock@file
+        traefik.http.routers.rapidbay.rule: Host(`rapidbay.`)
+        traefik.http.routers.rapidbay.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: rapidbay
+    spec:
+      containers:
+        - env:
+            - name: JACKETT_API_KEY
+              value: y7kd4gm4g49uu8g94t03h9gk0ca8ijk0
+            - name: JACKETT_HOST
+              value: jackett:9117
+          image: hauxir/rapidbay:latest
+          name: rapidbay
+          ports:
+            - containerPort: 5000
+          resources: {}
+      restartPolicy: Always
+status: {}
