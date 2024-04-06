@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.dev-sk.entrypoints: websecure
+    traefik.http.routers.dev-sk.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+    traefik.http.routers.dev-sk.rule: Host(`dev.`) && !PathPrefix(`/api`) && !PathPrefix(`/_`)
+    traefik.http.routers.dev-sk.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: dev-sk
+  name: dev-sk
+spec:
+  ports:
+    - name: "5173"
+      port: 5173
+      targetPort: 5173
+  selector:
+    io.kompose.service: dev-sk
+status:
+  loadBalancer: {}

@@ -769,4 +769,21 @@ services:
       - traefik.http.routers.dev-pb.tls.certresolver=leresolver
       - traefik.http.routers.dev-pb.middlewares=security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
 
-  
+  dev-sk:
+    container_name: dev-sk
+    image: node:current-alpine
+    networks: [net]
+    user: 1000:1000
+    expose: [5173] # Live development
+    command: sh -c "npx pnpm install && npm run dev -- --host 0.0.0.0" # live development
+    environment: [HOME=/sk]
+    working_dir: /sk
+    volumes:
+      - ./sk:/sk
+      - ./pb:/pb
+    labels: # live development
+      - traefik.enable=true
+      - traefik.http.routers.dev-sk.rule=Host(`dev.${HCC}`) && !PathPrefix(`/api`) && !PathPrefix(`/_`)
+      - traefik.http.routers.dev-sk.entrypoints=websecure
+      - traefik.http.routers.dev-sk.tls.certresolver=leresolver
+      - traefik.http.routers.dev-sk.middlewares=security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
