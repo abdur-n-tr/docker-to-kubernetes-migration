@@ -787,3 +787,69 @@ services:
       - traefik.http.routers.dev-sk.entrypoints=websecure
       - traefik.http.routers.dev-sk.tls.certresolver=leresolver
       - traefik.http.routers.dev-sk.middlewares=security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+
+  prod-pb:
+    container_name: prod-pb
+    image: golang:alpine
+    networks: [net]
+    user: 1000:1000
+    expose: [8090]
+    entrypoint: /pb/entrypoint.sh
+    command: "/pb/pocketbase serve --http 0.0.0.0:8090 --publicDir /sk/build" # Production
+    working_dir: /pb
+    environment:
+      - HOME=/pb
+      - AUDITLOG=posts,users
+    volumes:
+      - ./pb:/pb
+      - ./sk:/sk
+      - ./go/pkg:/go/pkg
+    labels: # Production
+      - traefik.enable=true
+      - traefik.http.routers.prod-pb.rule=Host(`${HCC}`) && (PathPrefix(`/_`) || PathPrefix(`/api`))
+      - traefik.http.routers.prod-pb.entrypoints=websecure
+      - traefik.http.routers.prod-pb.tls.certresolver=leresolver
+      - traefik.http.routers.prod-pb.middlewares=security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+  
+  prod-sk:
+    container_name: prod-sk
+    image: node:current-alpine
+    networks: [net]
+    user: 1000:1000
+    expose: [4173]
+    command: sh -c "npx pnpm install && npm run build && npm run preview -- --host 0.0.0.0" # Production
+    working_dir: /sk
+    environment: [HOME=/sk]
+    volumes:
+      - ./sk:/sk
+      - ./pb:/pb
+    labels: # Production
+      - traefik.enable=true
+      - traefik.http.routers.prod-sk.rule=Host(`${HCC}`) && !PathPrefix(`/api`) && !PathPrefix(`/_`)
+      - traefik.http.routers.prod-sk.entrypoints=websecure
+      - traefik.http.routers.prod-sk.tls.certresolver=leresolver
+      - traefik.http.routers.prod-sk.middlewares=security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+
+  live-ide:
+    container_name: live-ide
+    image: ghcr.io/linuxserver/code-server
+    privileged: true
+    networks: [net]
+    # ports: [8448:8443]
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - PASSWORD=${PASS}
+      - SUDO_PASSWORD=${PASS}
+      - DEFAULT_WORKSPACE=/workspace
+      - VSCODE_EXTENSION_IDS=esbenp.prettier-vscode|svelte.svelte-vscode|albert.TabOut|bradlc.vscode-tailwindcss|PKief.material-icon-theme|akamud.vscode-theme-onedark
+      - DOCKER_MODS=linuxserver/mods:universal-git # linuxserver/mods:universal-package-install|linuxserver/mods:code-server-zsh|linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-npmglobal
+    volumes:
+      - ./:/workspace
+      - ./ide/config:/config
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.live-ide.rule=Host(`live.${HCC}`)
+      - traefik.http.routers.live-ide.entrypoints=websecure
+      - traefik.http.routers.live-ide.tls.certresolver=leresolver
+      - traefik.http.routers.live-ide.middlewares=security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file #, auth@file

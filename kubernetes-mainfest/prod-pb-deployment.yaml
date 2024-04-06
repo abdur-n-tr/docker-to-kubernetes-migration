@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.prod-pb.entrypoints: websecure
+    traefik.http.routers.prod-pb.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+    traefik.http.routers.prod-pb.rule: Host(``) && (PathPrefix(`/_`) || PathPrefix(`/api`))
+    traefik.http.routers.prod-pb.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: prod-pb
+  name: prod-pb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: prod-pb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        traefik.enable: "true"
+        traefik.http.routers.prod-pb.entrypoints: websecure
+        traefik.http.routers.prod-pb.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+        traefik.http.routers.prod-pb.rule: Host(``) && (PathPrefix(`/_`) || PathPrefix(`/api`))
+        traefik.http.routers.prod-pb.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: prod-pb
+    spec:
+      containers:
+        - args:
+            - /pb/pocketbase
+            - serve
+            - --http
+            - 0.0.0.0:8090
+            - --publicDir
+            - /sk/build
+          command:
+            - /pb/entrypoint.sh
+          env:
+            - name: AUDITLOG
+              value: posts,users
+            - name: HOME
+              value: /pb
+          image: golang:alpine
+          name: prod-pb
+          ports:
+            - containerPort: 8090
+          resources: {}
+          volumeMounts:
+            - mountPath: /pb
+              name: dev-pb-claim0
+              subPath: pb
+            - mountPath: /sk
+              name: dev-pb-claim0
+              subPath: sk
+            - mountPath: /go/pkg
+              name: dev-pb-claim0
+              subPath: go/pkg
+          workingDir: /pb
+      restartPolicy: Always
+      volumes:
+        - name: dev-pb-claim0
+          persistentVolumeClaim:
+            claimName: dev-pb-claim0
+status: {}

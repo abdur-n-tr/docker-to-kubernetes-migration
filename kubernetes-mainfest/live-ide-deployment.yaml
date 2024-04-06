@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.live-ide.entrypoints: websecure
+    traefik.http.routers.live-ide.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+    traefik.http.routers.live-ide.rule: Host(`live.`)
+    traefik.http.routers.live-ide.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: live-ide
+  name: live-ide
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: live-ide
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        traefik.enable: "true"
+        traefik.http.routers.live-ide.entrypoints: websecure
+        traefik.http.routers.live-ide.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+        traefik.http.routers.live-ide.rule: Host(`live.`)
+        traefik.http.routers.live-ide.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: live-ide
+    spec:
+      containers:
+        - env:
+            - name: DEFAULT_WORKSPACE
+              value: /workspace
+            - name: DOCKER_MODS
+              value: linuxserver/mods:universal-git
+            - name: PASSWORD
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: SUDO_PASSWORD
+            - name: VSCODE_EXTENSION_IDS
+              value: esbenp.prettier-vscode|svelte.svelte-vscode|albert.TabOut|bradlc.vscode-tailwindcss|PKief.material-icon-theme|akamud.vscode-theme-onedark
+          image: ghcr.io/linuxserver/code-server
+          name: live-ide
+          resources: {}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /workspace
+              name: live-ide-claim0
+            - mountPath: /config
+              name: live-ide-claim0
+              subPath: config
+      restartPolicy: Always
+      volumes:
+        - name: live-ide-claim0
+          persistentVolumeClaim:
+            claimName: live-ide-claim0
+status: {}

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+    traefik.enable: "true"
+    traefik.http.routers.prod-sk.entrypoints: websecure
+    traefik.http.routers.prod-sk.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+    traefik.http.routers.prod-sk.rule: Host(``) && !PathPrefix(`/api`) && !PathPrefix(`/_`)
+    traefik.http.routers.prod-sk.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: prod-sk
+  name: prod-sk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: prod-sk
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+        traefik.enable: "true"
+        traefik.http.routers.prod-sk.entrypoints: websecure
+        traefik.http.routers.prod-sk.middlewares: security-headers@file, error-pages-middleware@docker, ratelimit@file, geoblock@file
+        traefik.http.routers.prod-sk.rule: Host(``) && !PathPrefix(`/api`) && !PathPrefix(`/_`)
+        traefik.http.routers.prod-sk.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: prod-sk
+    spec:
+      containers:
+        - args:
+            - sh
+            - -c
+            - npx pnpm install && npm run build && npm run preview -- --host 0.0.0.0
+          env:
+            - name: HOME
+              value: /sk
+          image: node:current-alpine
+          name: prod-sk
+          ports:
+            - containerPort: 4173
+          resources: {}
+          volumeMounts:
+            - mountPath: /sk
+              name: dev-pb-claim0
+              subPath: sk/sk
+            - mountPath: /pb
+              name: dev-pb-claim0
+              subPath: pb
+          workingDir: /sk
+      restartPolicy: Always
+      volumes:
+        - name: dev-pb-claim0
+          persistentVolumeClaim:
+            claimName: dev-pb-claim0
+status: {}
