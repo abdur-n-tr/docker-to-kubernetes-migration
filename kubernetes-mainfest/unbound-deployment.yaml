@@ -37,7 +37,7 @@ spec:
               touch /opt/unbound/etc/unbound/forward-records.conf
           volumeMounts:
             - mountPath: /opt/unbound/etc/unbound/
-              name: unbound-claim0
+              name: unbound-claim0  
       containers:
         - image: mvance/unbound:latest
           name: unbound

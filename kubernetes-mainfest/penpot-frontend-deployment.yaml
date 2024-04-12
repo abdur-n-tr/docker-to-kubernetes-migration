@@ -34,9 +34,18 @@ spec:
           volumeMounts:
             - mountPath: /opt/data
               name: penpot-assets-data
+            - mountPath: /etc/nginx/nginx.conf
+              name: "penpot-frontend-nginx"
+              readOnly: true
+              subPath: nginx.conf
       restartPolicy: Always
       volumes:
         - name: penpot-assets-data
           persistentVolumeClaim:
             claimName: penpot-assets-data
+        - name: "penpot-frontend-nginx"
+          configMap:
+            defaultMode: 420
+            name: "penpot-frontend-nginx"
+        
 status: {}

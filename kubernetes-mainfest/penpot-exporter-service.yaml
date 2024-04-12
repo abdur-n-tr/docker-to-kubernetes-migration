@@ -6,15 +6,15 @@ metadata:
     kompose.version: 1.22.0 (955b78124)
   creationTimestamp: null
   labels:
-    io.kompose.service: penpot-backend
-  name: penpot-backend
+    io.kompose.service: penpot-exporter
+  name: penpot-exporter
 spec:
   ports:
-    - name: "6060"
-      port: 6060
-      targetPort: 6060
+    - name: "6061"
+      port: 6061
+      targetPort: 6061
   selector:
-    io.kompose.service: penpot-backend
-  type: LoadBalancer
+    io.kompose.service: penpot-exporter
+  type: ClusterIP
 # status:
 #   loadBalancer: {}

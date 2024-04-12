@@ -35,7 +35,7 @@ spec:
               value: penpot
             - name: POSTGRES_USER
               value: penpot
-          image: postgres:13
+          image: postgres:14
           name: penpot-postgres
           readinessProbe:
             exec:
