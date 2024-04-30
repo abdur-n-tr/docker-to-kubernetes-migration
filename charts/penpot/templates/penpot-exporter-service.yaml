@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: penpot-exporter
+  name: penpot-exporter
+spec:
+  ports:
+    - name: "6061"
+      port: 6061
+      targetPort: 6061
+  selector:
+    io.kompose.service: penpot-exporter
+  type: ClusterIP
+# status:
+#   loadBalancer: {}

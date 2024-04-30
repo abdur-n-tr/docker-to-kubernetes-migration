@@ -1,0 +1,9 @@
+env:
+  WEBSOCKET_ENABLED: "true"
+
+persistence:
+  data:
+    enabled: true
+    retain: true
+    accessMode: ReadWriteOnce
+    size: 1Gi

@@ -28,8 +28,6 @@ spec:
         - env:
             - name: PENPOT_PUBLIC_URI
               value: http://penpot-frontend
-            - name: PENPOT_REDIS_URI
-              value: redis://penpot-redis/0
           image: penpotapp/exporter:latest
           name: penpot-exporter
           resources: {}

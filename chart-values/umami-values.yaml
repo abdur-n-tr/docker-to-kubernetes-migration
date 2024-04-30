@@ -1,0 +1,10 @@
+postgresql:
+  # -- enable PostgreSQL™ subchart from Bitnami
+  enabled: true
+  auth:
+    # -- Name for a custom database to create
+    database: umami
+    # -- Password for the custom user to create
+    password: umami
+    # -- Name for a custom user to create
+    username: umami

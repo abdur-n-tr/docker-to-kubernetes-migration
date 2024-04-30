@@ -1,0 +1,39 @@
+replicaCount: 1
+
+labels:
+  private_network: "true"
+
+extraEnv:
+  PUID: "1000"
+  PGID: "1000"
+  SERVERPORT: "51820"
+  PEERS: "3"
+
+securityContext:
+  capabilities:
+    add:
+      - NET_ADMIN
+      - SYS_MODULE
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 75
+
+volumes:
+  - name: wireguard-claim0
+    persistentVolumeClaim:
+      claimName: wireguard-claim0
+  - name: wireguard-claim1
+    persistentVolumeClaim:
+      claimName: wireguard-claim1
+
+# -- Passthrough pod volume mounts
+volumeMounts:
+  - mountPath: /config
+    name: wireguard-claim0
+  - mountPath: /lib/modules
+    name: wireguard-claim1
+
+

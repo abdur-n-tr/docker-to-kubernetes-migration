@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "rapidbay.fullname" . }}-test-connection"
+  labels:
+    {{- include "rapidbay.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "rapidbay.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

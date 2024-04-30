@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "llama-webui.fullname" . }}-test-connection"
+  labels:
+    {{- include "llama-webui.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "llama-webui.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

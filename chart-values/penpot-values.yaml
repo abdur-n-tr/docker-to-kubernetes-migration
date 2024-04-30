@@ -1,0 +1,23 @@
+global:
+  postgresqlEnabled: true
+  redisEnabled: true
+
+config:
+  flags: "enable-registration enable-login disable-demo-users disable-demo-warning disable-secure-session-cookies"
+  postgresql:
+    host: "penpot-postgresql"
+    port: 5432
+    username: "penpot"
+    password: "penpot"
+    database: "penpot"
+
+  redis:
+    host: "penpot-redis-master"
+    port: 6379
+    database: "0"
+
+postgresql:
+  auth:
+    username: "penpot"
+    password: "penpot"
+    database: "penpot"

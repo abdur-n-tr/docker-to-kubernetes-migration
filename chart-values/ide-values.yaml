@@ -1,0 +1,35 @@
+extraVars:
+  - name: DEFAULT_WORKSPACE
+    value: /workspace
+  - name: DOCKER_MODS
+    value: linuxserver/mods:universal-package-install|linuxserver/mods:universal-docker-in-docker|linuxserver/mods:code-server-awscli|linuxserver/mods:code-server-zsh|linuxserver/mods:code-server-python3|linuxserver/mods:code-server-nodejs|linuxserver/mods:universal-git|linuxserver/mods:code-server-npmglobal
+  - name: INSTALL_PACKAGES
+    value: btop|screen|htop|python-is-python3|apt-transport-https|software-properties-common|gnupg-agent|build-essential
+  - name: INSTALL_PIP_PACKAGES
+    value: ib_insync|pandas|numpy|pipx|httpie|textual|matplotlib|prompt_toolkit|pytermgui
+  - name: PASSWORD
+    value: 123456Eg
+  - name: PGID
+    value: "1000"
+  - name: PUID
+    value: "1000"
+  - name: SUDO_PASSWORD
+    value: 123456Eg
+  - name: VSCODE_EXTENSION_IDS
+    value: hediet.vscode-drawio|prettier-vscode|vscode-python
+
+service:
+  type: ClusterIP
+  port: 8443
+
+securityContext: 
+  privileged: true
+
+extraVolumeMounts:
+  - mountPath: /workspace
+    name: ide-pv-claim0
+    existingClaim: ide-claim0
+  #  - mountPath: /config
+  #    name: ide-pv-claim1
+  #    existingClaim: ide-claim0
+  #    subPath: config

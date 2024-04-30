@@ -1,0 +1,29 @@
+extraVars:
+  - name: DEFAULT_WORKSPACE
+    value: /workspace
+  - name: DOCKER_MODS
+    value: linuxserver/mods:universal-git
+  - name: PASSWORD
+    value: 123456Eg
+  - name: PGID
+    value: "1000"
+  - name: PUID
+    value: "1000"
+  - name: SUDO_PASSWORD
+    value: 123456Eg
+  - name: VSCODE_EXTENSION_IDS
+    value: esbenp.prettier-vscode|svelte.svelte-vscode|albert.TabOut|bradlc.vscode-tailwindcss|PKief.material-icon-theme|akamud.vscode-theme-onedark
+
+service:
+  type: ClusterIP
+  port: 8443
+
+securityContext: 
+  privileged: true
+
+extraVolumeMounts:
+  - mountPath: /workspace
+    name: live-ide-pv-claim
+    existingClaim: live-ide-claim
+
+

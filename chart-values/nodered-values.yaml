@@ -1,0 +1,13 @@
+image:
+  repository: docker.io/nodered/node-red
+  pullPolicy: IfNotPresent
+  tag: latest
+
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            PUID: 1000
+            PGID: 1000

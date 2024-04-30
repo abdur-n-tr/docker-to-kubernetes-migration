@@ -1,0 +1,147 @@
+# Default values for activepieces.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: activepieces/activepieces
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 0.14.3
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+env:
+  - name: AP_ENGINE_EXECUTABLE_PATH
+    value: dist/packages/engine/main.js
+  - name: AP_API_KEY
+    value: d7fa31d7b31d17a63b074e398031ba8336c4af31020222de25e4c5308b43fa374aec60c6ef4f8cb6e72bf3a563a791a67a769ca553f9a6985f8a892dabb58bb2
+  - name: AP_ENVIRONMENT
+    value: prod
+  - name: AP_JWT_SECRET
+    value: 53cf0079195a5d876c9c4a73eb9f0bf7b26fdaebafb5b914a5a5d6f187194742
+  - name: AP_ENCRYPTION_KEY
+    value: c0de79c3000fe24cf447e7cd40b60180
+  - name: AP_FRONTEND_URL
+    value: http://localhost:8080
+  - name: AP_WEBHOOK_TIMEOUT_SECONDS
+    value: "30"
+  - name: AP_EXECUTION_MODE
+    value: UNSANDBOXED
+  - name: AP_POSTGRES_DATABASE
+    value: activepieces
+  - name: AP_POSTGRES_HOST
+    value: ap-postgres
+  - name: AP_POSTGRES_PASSWORD
+    value: activepieces
+  - name: AP_POSTGRES_PORT
+    value: "5432"
+  - name: AP_POSTGRES_USERNAME
+    value: activepieces
+  - name: AP_REDIS_HOST
+    value: ap-redis
+  - name: AP_REDIS_PORT
+    value: "6379"
+  - name: AP_SANDBOX_RUN_TIME_SECONDS
+    value: "600"
+  - name: AP_TELEMETRY_ENABLED
+    value: "true"
+  - name: AP_TEMPLATES_SOURCE_URL
+    value: "https://cloud.activepieces.com/api/v1/flow-templates"
+  - name: AP_TRIGGER_DEFAULT_POLL_INTERVAL
+    value: "5"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+#livenessProbe:
+#  httpGet:
+#    path: /
+#    port: http
+#readinessProbe:
+#  httpGet:
+#    path: /
+#    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

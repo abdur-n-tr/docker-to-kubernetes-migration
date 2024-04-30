@@ -1,0 +1,26 @@
+mariadbi:
+  enabled: true
+  mariadbUsername: user101
+  mariadbDatabase: mydb
+
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            PHOTOPRISM_DARKTABLE_PRESETS: "false"
+            PHOTOPRISM_DATABASE_DRIVER: mysql
+            PHOTOPRISM_DEBUG: "false"
+            PHOTOPRISM_DETECT_NSFW: "false"
+            PHOTOPRISM_DISABLE_SETTINGS: "false"
+            PHOTOPRISM_DISABLE_TENSORFLOW: "false"
+            PHOTOPRISM_DISABLE_WEBDAV: "false"
+            PHOTOPRISM_EXPERIMENTAL: "false"
+            PHOTOPRISM_HTTP_COMPRESSION: gzip
+            PHOTOPRISM_PUBLIC: "true"
+            PHOTOPRISM_READONLY: "false"
+            PHOTOPRISM_SITE_CAPTION: "Browse Your Life"
+            PHOTOPRISM_SITE_TITLE: "PhotoPrism"
+            PHOTOPRISM_SITE_URL: https://prism.happycloudcomputing.com
+            PHOTOPRISM_UPLOAD_NSFW: "true"

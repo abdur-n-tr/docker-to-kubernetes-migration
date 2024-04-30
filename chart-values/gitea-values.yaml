@@ -1,0 +1,44 @@
+extraVolumes:
+  - name: gitea-claim0
+    persistentVolumeClaim:
+      claimName: gitea-claim0
+  - name: gitea-claim1
+    persistentVolumeClaim:
+      claimName: gitea-claim1
+  - name: timezone-volume
+    hostPath:
+      path: /etc/timezone
+  - name: localtime-volume
+    hostPath:
+      path: /etc/localtime
+
+extraContainerVolumeMounts:
+  - mountPath: /var/lib/gitea
+    name: gitea-claim0
+  - mountPath: /etc/gitea
+    name: gitea-claim1
+  - mountPath: /etc/timezone
+    name: timezone-volume
+    readOnly: true
+  - mountPath: /etc/localtime
+    name: localtime-volume
+    readOnly: true
+
+livenessProbe:
+  exec:
+    command:
+      - curl
+      - --fail
+      - http://localhost:3000/api/v1/status
+  initialDelaySeconds: 10
+  timeoutSeconds: 10
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+deployment:
+  env:
+    - name: USER_GID
+      value: "1000"
+    - name: USER_UID
+      value: "1000"

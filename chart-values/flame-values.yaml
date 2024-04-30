@@ -1,0 +1,8 @@
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          env:
+            PASSWORD: "123456Eg"
+            enable_integration: "true"

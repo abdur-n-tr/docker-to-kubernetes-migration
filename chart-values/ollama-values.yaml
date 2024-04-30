@@ -1,0 +1,12 @@
+resources:
+  # Pod limit
+  limits:
+    # -- Memory limit
+    memory: 200Mi
+
+    # -- CPU limit
+    cpu: 100m
+
+persistentVolume:
+  enabled: true
+  existingClaim: "ollama-claim0"

@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: penpot-backend
+  name: penpot-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: penpot-backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/penpot: "true"
+        io.kompose.service: penpot-backend
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox
+          command: ['sh', '-c', 'while ! nc -z penpot-postgres 5432; do echo "Waiting for PostgreSQL"; sleep 1; done']
+        - name: wait-for-redis
+          image: busybox
+          command: ['sh', '-c', 'while ! nc -z penpot-redis 6379; do echo "Waiting for Redis"; sleep 1; done']
+      containers:
+        - env:
+          - name: PENPOT_PUBLIC_URI
+            value: http://localhost:9001
+          - name: PENPOT_DATABASE_URI
+            value: postgresql://penpot-postgres/penpot
+          - name: PENPOT_DATABASE_USERNAME
+            value: penpot
+          - name: PENPOT_DATABASE_PASSWORD
+            value: penpot
+          - name: PENPOT_REDIS_URI
+            value: redis://penpot-redis/0
+          image: penpotapp/backend:latest
+          name: penpot-backend
+          resources: {}
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 6060
+          #     host: localhost
+          #   initialDelaySeconds: 10
+          #   failureThreshold: 3
+          #   periodSeconds: 60
+          #   timeoutSeconds: 10
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 6060
+          #     host: localhost
+          #   initialDelaySeconds: 10
+          #   failureThreshold: 3
+          #   periodSeconds: 60
+          #   timeoutSeconds: 10
+          volumeMounts:
+            - mountPath: /opt/data
+              name: penpot-assets-data
+      restartPolicy: Always
+      volumes:
+        - name: penpot-assets-data
+          persistentVolumeClaim:
+            claimName: penpot-assets-data
+status: {}

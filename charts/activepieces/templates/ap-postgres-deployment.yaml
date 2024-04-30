@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ap-postgres
+  name: ap-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ap-postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/net: "true"
+        io.kompose.service: ap-postgres
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_DB
+              value: activepieces
+            - name: POSTGRES_PASSWORD
+              value: activepieces
+            - name: POSTGRES_USER
+              value: activepieces
+          image: postgres:14.4
+          name: ap-postgres
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 10
+            failureThreshold: 3
+            periodSeconds: 60
+            timeoutSeconds: 10
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: ap-postgres-claim
+      restartPolicy: Always
+      volumes:
+        - name: ap-postgres-claim
+          persistentVolumeClaim:
+            claimName: ap-postgres-claim
+status: {}
+

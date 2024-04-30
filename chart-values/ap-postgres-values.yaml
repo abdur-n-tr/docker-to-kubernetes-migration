@@ -1,0 +1,16 @@
+image:
+  registry: "docker.io"
+  repository: "postgres"
+  pullPolicy: IfNotPresent
+  tag: "14.4"
+
+useDeployment: true
+
+env:
+  - name: POSTGRES_DB
+    value: activepieces
+  - name: POSTGRES_PASSWORD
+    value: activepieces
+  - name: POSTGRES_USER
+    value: activepieces
+

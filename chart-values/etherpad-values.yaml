@@ -1,0 +1,6 @@
+env:
+  TITLE: "NomPad"
+  FAVICON: "favicon.ico"
+  DEFAULT_PAD_TEXT: "Le service EtherPad de Nom"
+  ADMIN_PASSWORD: "adminpass"
+  USER_PASSWORD: "firstuserpass"

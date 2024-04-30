@@ -1,0 +1,25 @@
+settings:
+   rootPassword:
+     value: root123
+  
+env:
+  - name: PGID
+    value: "1000"
+  - name: PUID
+    value: "1000"
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+  periodSeconds: 10
+
+userDatabase: 
+  name:
+    value: mydb
+  user:
+    value: user101
+  password:
+    value: pass101

@@ -1,0 +1,50 @@
+#strategyType: Recreate
+#hostname: "pihole"
+#
+#extraEnvVars:
+#  WEBPASSWORD: ""
+#
+#capabilities: 
+#  add:
+#  - NET_ADMIN
+#
+## -- default upstream DNS 1 server to use
+#DNS1: "unbound-dns"
+## -- default upstream DNS 2 server to use
+#DNS2: "unbound-dns"
+#
+#podDnsConfig:
+#  enabled: true
+#  policy: "None"
+#  nameservers:
+#  - 127.0.0.1
+#  - 1.1.1.1
+#
+#persistentVolumeClaim:
+#  enabled: true
+#  existingClaim: pihole-claim
+#  accessModes:
+#    - ReadWriteOnce
+
+
+dnsmasq:
+  customDnsEntries:
+    - address=/happycloudcomputing.com/192.168.178.10
+  customCnameEntries:
+    - cname=foo.happycloudcomputing.com,happycloudcomputing.com
+
+serviceWeb:
+  loadBalancerIP: 94.72.116.16
+  annotations:
+    metallb.universe.tf/allow-shared-ip: pihole-svc
+  type: LoadBalancer
+
+serviceWeb:
+  loadBalancerIP: 94.72.116.16
+  annotations:
+    metallb.universe.tf/allow-shared-ip: pihole-svc
+  type: LoadBalancer
+
+persistentVolumeClaim:
+  enabled: true
+

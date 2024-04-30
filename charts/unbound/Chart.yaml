@@ -1,0 +1,28 @@
+annotations:
+  artifacthub.io/changes: |
+    - kind: removed
+      description: 'Remove values schema due to issues with flux variable substitution.'
+apiVersion: v2
+appVersion: 0.1.0
+dependencies:
+- name: base
+  repository: https://charts.pascaliske.dev
+  version: 1.0.2
+description: A Helm chart for unbound DNS resolver.
+home: https://charts.pascaliske.dev/charts/unbound/
+keywords:
+- unbound
+- dns-over-https
+- dns-proxy
+- recursive-dns
+maintainers:
+- email: info@pascaliske.dev
+  name: pascaliske
+  url: https://pascaliske.dev
+name: unbound
+sources:
+- https://github.com/pascaliske/helm-charts
+- https://github.com/pascaliske/docker-unbound
+- https://github.com/NLnetLabs/unbound
+type: application
+version: 1.0.3

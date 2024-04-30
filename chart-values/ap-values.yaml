@@ -1,0 +1,20 @@
+image:
+  repository: docker.io/activepieces/activepieces
+  pullPolicy: IfNotPresent
+  tag: '0.14.3'
+
+db:
+  type: POSTGRES
+  host: ap-postgres
+  port: 5432
+  username: activepieces
+  password: activepieces
+  database: activepieces
+
+queue:
+  mode: REDIS
+  url: redis://ap-redis-master:6379
+
+ngrok:
+  apiKey: ""
+  host: ""
