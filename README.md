@@ -1,6 +1,15 @@
 # Docker to Kubernetes Migration
 Clone this repo: https://github.com/304442/infra.git and go into root dir `infra`
 
+## Setup DSN record for Server Public IP
+- Get the `pubilc ip` of the server
+
+```bash
+curl ifconfig.me
+```
+
+- Insert the `DSN record` of type `A` with server public IP address.  
+
 ## Setup Contabo using Terraform
 
 Replace the contabo credentials in the `main.tf` inside `terraform` and run the following commands,
