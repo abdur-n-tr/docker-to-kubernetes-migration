@@ -19,7 +19,7 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - vmi1686791.contaboserver.net  # Specify the node where the storage resides
+                - vmi1845832.contaboserver.net  # Specify the node where the storage resides
 ---
 
 apiVersion: v1

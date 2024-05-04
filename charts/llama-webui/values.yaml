@@ -16,7 +16,7 @@ fullnameOverride: ""
 
 env:
   - name: OLLAMA_API
-    value: http://ollama:11434/api
+    value: http://llama-app-ollama:11434/api
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -75,14 +75,14 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
+# livenessProbe:
+#   httpGet:
+#     path: /
+#     port: http
+# readinessProbe:
+#   httpGet:
+#     path: /
+#     port: http
 
 autoscaling:
   enabled: false

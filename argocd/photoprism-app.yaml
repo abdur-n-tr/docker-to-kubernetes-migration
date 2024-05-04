@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: photoprism-app
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+  - group: "*"
+    kind: "Deployment"
+    jsonPointers:
+    - /spec/template/spec/hostUsers
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://charts.truecharts.org
+      chart: photoprism
+      targetRevision: 21.0.8
+      helm:
+        releaseName: photoprism
+        parameters:
+        - name: "fullnameOverride"
+          value: photoprism
+        valueFiles:
+        - $values/chart-values/prism-values.yaml
+
+    - repoURL: https://github.com/304442/infra
+      targetRevision: HEAD
+      ref: values

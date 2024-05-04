@@ -9,6 +9,11 @@ spec:
     automated:
       prune: true
       selfHeal: true
+  ignoreDifferences:
+  - group: "*"
+    kind: "Deployment"
+    jsonPointers:
+    - /spec/template/spec/hostUsers
   destination:
     server: https://kubernetes.default.svc
     namespace: default
@@ -87,12 +92,12 @@ spec:
       path: charts/glances
       targetRevision: HEAD
 
-    - repoURL: https://groundhog2k.github.io/helm-charts
-      chart: mariadb
-      targetRevision: 3.1.0
-      helm:
-        valueFiles:
-        - $values/chart-values/prism-db-values.yaml
+    # - repoURL: https://groundhog2k.github.io/helm-charts
+    #   chart: mariadb
+    #   targetRevision: 3.1.0
+    #   helm:
+    #     valueFiles:
+    #     - $values/chart-values/prism-db-values.yaml
 
     - repoURL: https://charts.truecharts.org
       chart: photoprism

@@ -46,7 +46,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-wireguard-ui
+            name: wireguard-ui
             port:
               number: 5000
 
@@ -112,7 +112,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-syncthing
+            name: syncthing
             port:
               number: 8384
 
@@ -123,7 +123,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-umami
+            name: umami
             port:
               number: 3000
 
@@ -134,7 +134,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-rapidbay
+            name: rapidbay
             port:
               number: 5000
 
@@ -145,7 +145,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-jackett
+            name: jackett
             port:
               number: 9117
 
@@ -156,7 +156,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-qbittorrent-webui
+            name: qbittorrent-webui
             port:
               number: 8080
 
@@ -167,7 +167,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-browserless-chrome
+            name: browserless-chrome
             port:
               number: 10194
  
@@ -189,7 +189,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-node-red
+            name: node-red
             port:
               number: 1880
 
@@ -200,7 +200,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-pinnwand
+            name: pinnwand
             port:
               number: 8000
 
@@ -222,7 +222,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-pihole-web
+            name: pihole-web
             port:
               number: 80
 
@@ -233,7 +233,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-vaultwarden
+            name: vaultwarden
             port:
               number: 8080
 
@@ -244,7 +244,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-photoprism
+            name: photoprism
             port:
               number: 2342
 
@@ -255,7 +255,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-glances
+            name: glances
             port:
               number: 61208
 
@@ -266,7 +266,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-ibga
+            name: ibga
             port:
               number: 5800
 
@@ -277,7 +277,7 @@ spec:
         path: /
         backend:
           service:
-            name: active-pieces-activepieces
+            name: activepieces
             port:
               number: 80
 
@@ -288,7 +288,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-flame
+            name: flame-app
             port:
               number: 10291
 
@@ -299,7 +299,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-llama-webui
+            name: llama-app-llama-webui
             port:
               number: 8080
 
@@ -310,7 +310,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-gitea-http
+            name: gitea-app-http
             port:
               number: 3000
 
@@ -321,7 +321,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-code-server
+            name: code-server
             port:
               number: 8443
 
@@ -332,7 +332,7 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-etherpad
+            name: etherpad
             port:
               number: 9001
 
@@ -343,6 +343,6 @@ spec:
         path: /
         backend:
           service:
-            name: happy-computing-neko
+            name: neko
             port:
               number: 10294

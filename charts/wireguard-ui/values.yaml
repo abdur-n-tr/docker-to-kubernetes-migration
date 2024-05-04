@@ -16,7 +16,7 @@ fullnameOverride: ""
 
 env:
 - name: WGUI_SERVER_INTERFACE_ADDRESSES
-  value: 10.43.166.184
+  value: 10.43.199.95
 - name: WGUI_SERVER_LISTEN_PORT
   value: 51820
 

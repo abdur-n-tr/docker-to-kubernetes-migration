@@ -34,13 +34,13 @@ dnsmasq:
     - cname=foo.happycloudcomputing.com,happycloudcomputing.com
 
 serviceWeb:
-  loadBalancerIP: 94.72.116.16
+  loadBalancerIP: 94.72.118.153
   annotations:
     metallb.universe.tf/allow-shared-ip: pihole-svc
   type: LoadBalancer
 
 serviceWeb:
-  loadBalancerIP: 94.72.116.16
+  loadBalancerIP: 94.72.118.153
   annotations:
     metallb.universe.tf/allow-shared-ip: pihole-svc
   type: LoadBalancer

@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: code-server
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+  - group: "*"
+    kind: "Deployment"
+    jsonPointers:
+    - /spec/template/spec/hostUsers
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://code-server-boilerplates.github.io/charts
+      chart: code-server
+      targetRevision: 1.0.3
+      helm:
+        releaseName: code-server
+        parameters:
+        - name: "fullnameOverride"
+          value: code-server
+        valueFiles:
+        - $values/chart-values/ide-values.yaml
+
+    - repoURL: https://code-server-boilerplates.github.io/charts
+      chart: code-server
+      targetRevision: 1.0.3
+      helm:
+        releaseName: live-ide
+        parameters:
+        - name: "fullnameOverride"
+          value: live-ide
+        valueFiles:
+        - $values/chart-values/live-ide-values.yaml
+
+    - repoURL: https://github.com/304442/infra
+      targetRevision: HEAD
+      ref: values

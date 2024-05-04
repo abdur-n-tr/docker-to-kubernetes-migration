@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: activepieces-app
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+  - group: "*"
+    kind: "Deployment"
+    jsonPointers:
+    - /spec/template/spec/hostUsers
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/304442/infra
+      path: charts/activepieces
+      targetRevision: HEAD
+      helm:
+        releaseName: activepieces
+        parameters:
+        - name: "fullnameOverride"
+          value: activepieces
+
+    - repoURL: https://github.com/304442/infra
+      targetRevision: HEAD
+      ref: values

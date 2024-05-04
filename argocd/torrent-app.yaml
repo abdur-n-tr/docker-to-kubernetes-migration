@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: torrent-app
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+  - group: "*"
+    kind: "Deployment"
+    jsonPointers:
+    - /spec/template/spec/hostUsers
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+  - repoURL: https://charts.alekc.dev
+    chart: qbittorrent
+    targetRevision: 1.1.1
+    helm:
+      releaseName: qbittorrent
+      parameters:
+      - name: "fullnameOverride"
+        value: qbittorrent
+      valueFiles:
+      - $values/chart-values/qbittorrent-values.yaml
+
+  - repoURL: https://github.com/304442/infra
+    path: charts/jackett
+    targetRevision: HEAD
+    helm:
+      releaseName: jackett
+      parameters:
+      - name: "fullnameOverride"
+        value: jackett
+
+  - repoURL: https://github.com/304442/infra
+    path: charts/rapidbay
+    targetRevision: HEAD
+    helm:
+      releaseName: rapidbay
+      parameters:
+      - name: "fullnameOverride"
+        value: rapidbay
+
+  - repoURL: https://github.com/304442/infra
+    targetRevision: HEAD
+    ref: values
+

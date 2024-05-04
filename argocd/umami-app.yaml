@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: umami-app
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+  - group: "*"
+    kind: "Deployment"
+    jsonPointers:
+    - /spec/template/spec/hostUsers
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+  - repoURL: https://charts.christianhuth.de
+    chart: umami
+    targetRevision: 3.1.1
+    helm:
+      releaseName: umami
+      parameters:
+      - name: "fullnameOverride"
+        value: umami
+      valueFiles:
+      - $values/chart-values/umami-values.yaml
+
+  - repoURL: https://github.com/304442/infra
+    targetRevision: HEAD
+    ref: values
