@@ -1,0 +1,28 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: geoblock
+  namespace: default
+spec:
+  plugin:
+    geoblock:
+      allowLocalRequests: true
+      logLocalRequests: false
+      logAllowedRequests: false
+      logApiRequests: false
+      api: "https://get.geojs.io/v1/ip/country/{ip}"
+      apiTimeoutMs: 500
+      cacheSize: 15
+      forceMonthlyUpdate: true
+      allowUnknownCountries: false
+      unknownCountryApiResponse: "nil"
+      backListMode: false
+      countries:
+        - AF # Afghanistan
+        - AL # Albania
+        - DZ # Algeria
+        - AS # American Samoa
+        - AD # Andorra
+        - AO # Angola
+        - AI # Anguilla
+        - AQ # An

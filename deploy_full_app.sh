@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Check if domainName is passed as an argument
+if [ -z "$1" ]; then
+  echo "Usage: $0 <domainName>"
+  exit 1
+fi
+
+DOMAIN_NAME=$1
+
 # setup helm and helmfile
 chmod u+x ./setup_helm.sh
 ./setup_helm.sh
@@ -20,5 +28,6 @@ chmod u+x ./pvc/deploy-pvc.sh
 kubectl apply -f argocd-deployment.yaml
 
 # setup ingress for services
-kubectl apply -f traefik-ingress/argocd-ui-ingress.yaml
-kubectl apply -f traefik-ingress/happy-compute-ingress.yaml
+# kubectl apply -f traefik-ingress/argocd-ui-ingress.yaml
+# kubectl apply -f traefik-ingress/happy-compute-ingress.yaml
+helm install custom-ingress ./custom-ingress --set domainName=${DOMAIN_NAME}

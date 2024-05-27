@@ -1,0 +1,19 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: basic-auth
+  namespace: default
+spec:
+  basicAuth:
+    secret: authsecret2
+
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: authsecret2
+  namespace: default
+type: kubernetes.io/basic-auth
+data:
+  username: dXNlcjEwMQo= # username: user101
+  password: YWRtaW4xMjMK # password: admin123
